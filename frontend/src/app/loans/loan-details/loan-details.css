@@ -1,0 +1,26 @@
+.details-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.draft { background: #eee; }
+.submitted { background: orange; color: #fff; }
+.under_review { background: #2196f3; color: #fff; }
+.approved { background: green; color: #fff; }
+.rejected { background: red; color: #fff; }
+
+.actions button {
+  margin-right: 10px;
+}
+
+.reject-reason {
+  color: red;
+  font-weight: bold;
+}

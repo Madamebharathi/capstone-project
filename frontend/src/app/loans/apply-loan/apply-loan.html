@@ -1,0 +1,115 @@
+<div class="apply-loan-card">
+
+  <h2>Apply Loan</h2>
+
+  <form [formGroup]="loanForm" (ngSubmit)="confirmSubmitLoan()" class="loan-form">
+
+    <!-- CLIENT NAME -->
+    <label>Client Name</label>
+    <input type="text" formControlName="clientName" />
+    <small class="error"
+      *ngIf="loanForm.get('clientName')?.touched && loanForm.get('clientName')?.invalid">
+      Client name is required
+    </small>
+
+    <!-- LOAN AMOUNT -->
+    <label>Loan Amount</label>
+    <input type="number" formControlName="amount" />
+    <small class="error"
+      *ngIf="loanForm.get('amount')?.touched && loanForm.get('amount')?.invalid">
+      Loan amount must be greater than 0
+    </small>
+
+    <!-- TENURE -->
+    <label>Tenure (Months)</label>
+    <input type="number" formControlName="tenureMonths" />
+    <small class="error"
+      *ngIf="loanForm.get('tenureMonths')?.touched && loanForm.get('tenureMonths')?.invalid">
+      Tenure must be at least 1 month
+    </small>
+
+    <!-- INTEREST RATE -->
+    <label>Interest Rate (%)</label>
+    <input type="number" formControlName="interestRate" />
+    <small class="error"
+      *ngIf="loanForm.get('interestRate')?.touched && loanForm.get('interestRate')?.invalid">
+      Interest rate must be between 1% and 100%
+    </small>
+
+    <!-- LOAN TYPE -->
+    <label>Loan Type</label>
+    <select formControlName="loanType">
+      <option value="">Select Loan Type</option>
+    <option value="TERM_LOAN">Term Loan</option>
+<option value="WORKING_CAPITAL">Working Capital</option>
+    </select>
+    <small class="error"
+      *ngIf="loanForm.get('loanType')?.touched && loanForm.get('loanType')?.invalid">
+      Loan type is required
+    </small>
+
+    <!-- EMI PREVIEW -->
+    <div class="emi-preview" *ngIf="emi">
+      <h4>EMI Preview</h4>
+      <div class="emi-row">
+        <span>Monthly EMI</span>
+        <strong>₹ {{ emi }}</strong>
+      </div>
+      <div class="emi-row">
+        <span>Total Interest</span>
+        <strong>₹ {{ totalInterest }}</strong>
+      </div>
+      <div class="emi-row">
+        <span>Total Payable</span>
+        <strong>₹ {{ totalPayable }}</strong>
+      </div>
+    </div>
+
+    <!-- FINANCIALS -->
+    <h3>Financials</h3>
+
+    <div formGroupName="financials" class="financials-grid">
+
+      <div>
+        <label>Revenue</label>
+        <input type="number" formControlName="revenue" />
+        <small class="error"
+          *ngIf="loanForm.get('financials.revenue')?.touched &&
+                 loanForm.get('financials.revenue')?.invalid">
+          Revenue must be greater than 0
+        </small>
+      </div>
+
+      <div>
+        <label>EBITDA</label>
+        <input type="number" formControlName="ebitda" />
+        <small class="error"
+          *ngIf="loanForm.get('financials.ebitda')?.touched &&
+                 loanForm.get('financials.ebitda')?.invalid">
+          EBITDA is required
+        </small>
+      </div>
+
+      <div>
+        <label>Rating</label>
+        <input type="text" formControlName="rating" />
+        <small class="error"
+          *ngIf="loanForm.get('financials.rating')?.touched &&
+                 loanForm.get('financials.rating')?.invalid">
+          Rating is required
+        </small>
+      </div>
+
+    </div>
+
+    <!-- SUBMIT -->
+    <button type="submit"
+      [disabled]="loanForm.invalid || loading">
+      {{ loading ? 'Submitting...' : 'Submit Loan' }}
+    </button>
+
+    <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+    <p class="success" *ngIf="successMsg">{{ successMsg }}</p>
+
+  </form>
+</div>

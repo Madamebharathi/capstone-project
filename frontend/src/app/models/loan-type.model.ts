@@ -1,0 +1,6 @@
+export enum LoanType {
+  TERM_LOAN = 'TERM_LOAN',
+  WORKING_CAPITAL = 'WORKING_CAPITAL',
+  OVERDRAFT = 'OVERDRAFT',
+  SME_LOAN = 'SME_LOAN'
+}

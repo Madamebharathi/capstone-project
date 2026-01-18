@@ -1,0 +1,72 @@
+<div *ngIf="loading">Loading loan details...</div>
+
+<div *ngIf="!loading && loan" class="details-card">
+
+  <h2>Loan Details</h2>
+
+  <p><b>Client:</b> {{ loan.clientName }}</p>
+  <p><b>Created By:</b> {{ loan.createdBy }}</p>
+  <p><b>Loan Type:</b> {{ loan.loanType }}</p>
+  <p><b>Amount:</b> ₹ {{ loan.requestedAmount | number }}</p>
+  <p><b>Interest:</b> {{ loan.proposedInterestRate }} %</p>
+  <p><b>Tenure:</b> {{ loan.tenureMonths }} months</p>
+
+  <p>
+    <b>Status:</b>
+    <span class="status" [ngClass]="loan.status.toLowerCase()">
+      {{ loan.status }}
+    </span>
+  </p>
+
+  <div *ngIf="loan.financials">
+    <h4>Financials</h4>
+    <p>Revenue: ₹ {{ loan.financials.revenue }}</p>
+    <p>EBITDA: ₹ {{ loan.financials.ebitda }}</p>
+    <p>Rating: {{ loan.financials.rating }}</p>
+  </div>
+
+  <div *ngIf="loan.rejectionReason">
+    <p class="reject-reason">
+      <b>Rejection Reason:</b> {{ loan.rejectionReason }}
+    </p>
+  </div>
+
+  <!-- USER ACTION -->
+  <button
+    *ngIf="!isAdmin && loan.status === 'DRAFT'"
+    (click)="submitLoan()"
+    class="btn submit">
+    Submit
+  </button>
+
+  <!-- ADMIN ACTIONS -->
+  <div *ngIf="isAdmin" class="actions">
+    <button
+      *ngIf="loan.status === 'SUBMITTED'"
+      (click)="markUnderReview()"
+      class="btn review">
+      Review
+    </button>
+
+    <button
+      *ngIf="loan.status === 'UNDER_REVIEW'"
+      (click)="approveLoan()"
+      class="btn approve">
+      Approve
+    </button>
+
+    <button
+      *ngIf="loan.status === 'UNDER_REVIEW'"
+      (click)="rejectLoan()"
+      class="btn reject">
+      Reject
+    </button>
+  </div>
+
+  <h3>Action Timeline</h3>
+  <ul>
+    <li *ngFor="let a of loan.actions">
+      {{ a.action }} — {{ a.comments }} ({{ a.timestamp | date:'short' }})
+    </li>
+  </ul>
+</div>

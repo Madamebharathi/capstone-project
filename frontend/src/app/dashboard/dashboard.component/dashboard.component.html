@@ -1,0 +1,78 @@
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="logo">Loan Deal and Approval System</h2>
+
+    <!-- USER MENU -->
+    <ul *ngIf="role === 'USER'">
+      <li routerLink="/dashboard">Dashboard</li>
+      <li routerLink="/dashboard/loans">My Loans</li>
+      <li routerLink="/dashboard/apply-loan">Apply Loan</li>
+    </ul>
+
+    <!-- ADMIN MENU -->
+    <ul *ngIf="role === 'ADMIN'">
+      <li routerLink="/dashboard">Dashboard</li>
+      <li routerLink="/dashboard/review-loans">Review Loans</li>
+      <li routerLink="/dashboard/users">Manage Users</li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <header class="topbar">
+      <span>{{ email }}</span>
+      <button (click)="logout()">Logout</button>
+    </header>
+
+  <!-- DASHBOARD ONLY -->
+<section class="content" *ngIf="isDashboard">
+
+  <h2 *ngIf="role === 'USER'">User Dashboard</h2>
+  <h2 *ngIf="role === 'ADMIN'">Admin Dashboard</h2>
+
+ <div class="stats-grid">
+
+  <!-- TOTAL -->
+  <div class="stat-card total" (click)="filterBy('ALL')">
+    <h3>{{ stats.total }}</h3>
+    <p>Total Loans</p>
+  </div>
+
+  <!-- SUBMITTED -->
+  <div class="stat-card submitted" (click)="filterBy('SUBMITTED')">
+    <h3>{{ stats.submitted }}</h3>
+    <p>Submitted</p>
+  </div>
+
+  <!-- UNDER REVIEW -->
+  <div class="stat-card review" *ngIf="role === 'ADMIN'" (click)="filterBy('UNDER_REVIEW')">
+    <h3>{{ stats.underReview }}</h3>
+    <p>Under Review</p>
+  </div>
+
+  <!-- APPROVED -->
+  <div class="stat-card approved" (click)="filterBy('APPROVED')">
+    <h3>{{ stats.approved }}</h3>
+    <p>Approved</p>
+  </div>
+
+  <!-- REJECTED -->
+  <div class="stat-card rejected" *ngIf="role === 'ADMIN'" (click)="filterBy('REJECTED')">
+    <h3>{{ stats.rejected }}</h3>
+    <p>Rejected</p>
+  </div>
+
+</div>
+
+</section>
+
+<!-- OTHER PAGES ONLY -->
+<section *ngIf="!isDashboard">
+  <router-outlet></router-outlet>
+</section>
+
+  </main>
+
+</div>

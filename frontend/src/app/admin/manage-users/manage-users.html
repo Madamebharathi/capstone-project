@@ -1,0 +1,119 @@
+<h2 class="section-title">Manage Users</h2>
+
+<!-- CREATE USER CARD -->
+<div class="create-user-card">
+  <h3>Create New User</h3>
+
+  <!-- FORM -->
+  <form #createUserForm="ngForm" class="create-user-row">
+
+    <!-- EMAIL -->
+    <div class="field">
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        [(ngModel)]="newUser.email"
+        required
+        email
+        #email="ngModel"
+      />
+      <small class="error" *ngIf="email.invalid && email.touched">
+        Valid email is required
+      </small>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="field">
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        [(ngModel)]="newUser.password"
+        required
+        minlength="6"
+        #password="ngModel"
+      />
+      <small class="error" *ngIf="password.invalid && password.touched">
+        Password must be at least 6 characters
+      </small>
+    </div>
+
+    <!-- ROLE -->
+    <div class="field">
+      <select
+        name="role"
+        [(ngModel)]="newUser.role"
+        required
+        #role="ngModel"
+      >
+        <option value="">Select Role</option>
+        <option value="ADMIN">ADMIN</option>
+        <option value="USER">USER</option>
+      </select>
+      <small class="error" *ngIf="role.invalid && role.touched">
+        Role is required
+      </small>
+    </div>
+
+    <!-- CREATE BUTTON -->
+    <button
+      class="create-btn"
+      type="button"
+      [disabled]="createUserForm.invalid"
+      (click)="createUser()"
+    >
+      Create
+    </button>
+
+  </form>
+</div>
+
+<!-- USERS TABLE -->
+<div class="table-wrapper">
+  <table class="users-table">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th class="action-col">Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          <span
+            class="status-badge"
+            [class.active]="user.active"
+            [class.inactive]="!user.active"
+          >
+            {{ user.active ? 'ACTIVE' : 'INACTIVE' }}
+          </span>
+        </td>
+
+        <td class="action-col">
+          <button
+            *ngIf="!user.active"
+            class="activate-btn"
+            (click)="confirmToggle(user, true)"
+          >
+            Activate
+          </button>
+
+          <button
+            *ngIf="user.active"
+            class="deactivate-btn"
+            [disabled]="user.email === loggedInEmail"
+            (click)="confirmToggle(user, false)"
+          >
+            Deactivate
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,121 @@
+<div class="edit-loan-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading loan details...</p>
+  </div>
+
+  <!-- Edit Form -->
+  <div *ngIf="!loading && loan" class="loan-form-card">
+    <div class="form-header">
+      <h2>Edit Loan Application</h2>
+      <div class="loan-status">
+        <span class="status-badge" [ngClass]="loan.status.toLowerCase()">
+          {{ loan.status }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Warning if not editable -->
+    <div *ngIf="!canEdit()" class="alert alert-warning">
+      ⚠️ This loan cannot be edited because it has already been submitted for approval.
+    </div>
+
+    <form class="loan-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="clientName">Client Name <span class="required">*</span></label>
+          <input
+            id="clientName"
+            type="text"
+            name="clientName"
+            [(ngModel)]="loan.clientName"
+            [disabled]="!canEdit()"
+            placeholder="Enter client name"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="loanType">Loan Type <span class="required">*</span></label>
+          <select 
+            id="loanType"
+            [(ngModel)]="loan.loanType" 
+            [disabled]="!canEdit()" 
+            name="loanType"
+            class="form-control"
+          >
+            <option value="TERM_LOAN">Term Loan</option>
+            <option value="WORKING_CAPITAL">Working Capital</option>
+            <option value="OVERDRAFT">Overdraft</option>
+            <option value="SME_LOAN">SME Loan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="requestedAmount">Loan Amount (₹) <span class="required">*</span></label>
+          <input 
+            id="requestedAmount"
+            type="number" 
+            [(ngModel)]="loan.requestedAmount" 
+            [disabled]="!canEdit()" 
+            name="requestedAmount"
+            placeholder="Enter amount"
+            class="form-control"
+            min="0"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="proposedInterestRate">Interest Rate (%) <span class="required">*</span></label>
+          <input 
+            id="proposedInterestRate"
+            type="number" 
+            [(ngModel)]="loan.proposedInterestRate" 
+            [disabled]="!canEdit()" 
+            name="proposedInterestRate"
+            placeholder="Enter interest rate"
+            class="form-control"
+            step="0.1"
+            min="0"
+            max="100"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="tenureMonths">Tenure (Months) <span class="required">*</span></label>
+          <input 
+            id="tenureMonths"
+            type="number" 
+            [(ngModel)]="loan.tenureMonths" 
+            [disabled]="!canEdit()" 
+            name="tenureMonths"
+            placeholder="Enter tenure"
+            class="form-control"
+            min="1"
+          />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="button" 
+          (click)="cancel()" 
+          class="btn btn-secondary"
+        >
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          (click)="saveLoan()" 
+          [disabled]="!canEdit()"
+          class="btn btn-primary"
+        >
+          💾 Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,114 @@
+<h3>Loans</h3>
+
+<p *ngIf="loading" class="loading-text">
+  Loading loans...
+</p>
+
+<table
+  class="loan-table"
+  *ngIf="!loading && loans.length > 0; else noLoans"
+>
+  <thead>
+    <tr>
+      <th *ngIf="isAdmin">Client Name</th>
+      <th *ngIf="isAdmin">Email</th>
+      <th>Amount</th>
+      <th>Tenure</th>
+      <th>Type</th>
+      <th>Status</th>
+      <th *ngIf="isAdmin">Actions</th>
+      <th *ngIf="!isAdmin">Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr
+      *ngFor="let loan of loans"
+      class="clickable-row"
+      (click)="openLoanDetails(loan.id)"
+    >
+      <!-- ADMIN ONLY -->
+      <td *ngIf="isAdmin">{{ loan.clientName }}</td>
+      <td *ngIf="isAdmin">{{ loan.createdBy }}</td>
+
+      <td>₹ {{ loan.requestedAmount | number }}</td>
+      <td>{{ loan.tenureMonths }} months</td>
+      <td>{{ loan.loanType }}</td>
+
+      <!-- STATUS (only one column) -->
+      <td>
+        <span
+          class="status-badge"
+          [ngClass]="loan.deleted ? 'deleted' : loan.status.toLowerCase()"
+        >
+          {{ loan.deleted ? 'DELETED' : loan.status }}
+        </span>
+      </td>
+
+      <!-- ADMIN ACTIONS -->
+      <td *ngIf="isAdmin" class="action-cell">
+        <button
+          *ngIf="loan.status === 'SUBMITTED'"
+          class="review-btn"
+          (click)="confirmReview(loan.id); $event.stopPropagation()">
+          Review
+        </button>
+        
+        <button
+          *ngIf="loan.status === 'UNDER_REVIEW'"
+          class="approve-btn"
+          (click)="confirmApprove(loan.id); $event.stopPropagation()">
+          Approve
+        </button>
+
+        <button
+          *ngIf="loan.status === 'UNDER_REVIEW'"
+          class="reject-btn"
+          (click)="confirmReject(loan.id); $event.stopPropagation()">
+          Reject
+        </button>
+
+        <button
+          *ngIf="canDeleteLoan(loan) && !loan.deleted"
+          class="delete-btn"
+          (click)="confirmDelete(loan.id); $event.stopPropagation()">
+          Delete
+        </button>
+      </td>
+
+      <!-- USER ACTIONS -->
+      <td *ngIf="!isAdmin" class="action-cell">
+        <button
+          *ngIf="loan.status === 'DRAFT'"
+          class="edit-btn"
+          (click)="editLoan(loan); $event.stopPropagation()">
+          Edit
+        </button>
+
+        <button
+          *ngIf="loan.status === 'DRAFT'"
+          class="submit-btn"
+          (click)="confirmSubmit(loan.id); $event.stopPropagation()">
+          Submit
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- PAGINATION CONTROLS -->
+<div class="pagination" *ngIf="!loading && loans.length > 0">
+  <button (click)="previousPage()" [disabled]="page === 0">
+    ← Previous
+  </button>
+  
+  <span>Page {{ page + 1 }} of {{ totalPages }}</span>
+  
+  <button (click)="nextPage()" [disabled]="page >= totalPages - 1">
+    Next →
+  </button>
+</div>
+
+<ng-template #noLoans>
+  <p *ngIf="!loading">No loans found.</p>
+</ng-template>
