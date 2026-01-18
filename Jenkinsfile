@@ -10,18 +10,20 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t capstone-app .'
-            }
-        }
-
-        stage('Run Container') {
+        stage('Build & Deploy Docker Compose') {
             steps {
                 sh '''
-                docker stop capstone || true
-                docker rm capstone || true
-                docker run -d -p 80:8080 --name capstone capstone-app
+                # Go to repo directory
+                cd $WORKSPACE
+                
+                # Stop & remove previous containers
+                docker-compose down -v
+                
+                # Build all images
+                docker-compose build
+                
+                # Start all containers in detached mode
+                docker-compose up -d
                 '''
             }
         }
