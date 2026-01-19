@@ -1,5 +1,27 @@
-node_modules/
-dist/
-target/
-.env
+# Docker
 *.log
+.env
+
+# Node
+node_modules/
+**/node_modules/
+npm-debug.log*
+
+# Java/Maven
+target/
+*.jar
+*.war
+*.class
+.mvn/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# MongoDB data
+mongo-data/
+
+# Logs
+logs/

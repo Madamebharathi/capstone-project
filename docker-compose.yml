@@ -31,6 +31,16 @@ services:
       timeout: 10s
       retries: 10
 
+  mongodb:
+    image: mongo:6.0
+    container_name: loan-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - loanpricing-network
+
   loan-backend:
     build:
       context: ./backend
@@ -40,8 +50,10 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
+      mongodb:
+        condition: service_started
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://host.docker.internal:27017/loan_pricing_db
+      SPRING_DATA_MONGODB_URI: mongodb://loan-mongodb:27017/loan_pricing_db
       SPRING_KAFKA_BOOTSTRAP_SERVERS: loan-kafka:9092
     networks:
       - loanpricing-network
@@ -56,6 +68,9 @@ services:
       - loan-backend
     networks:
       - loanpricing-network
+
+volumes:
+  mongo-data:
 
 networks:
   loanpricing-network:
