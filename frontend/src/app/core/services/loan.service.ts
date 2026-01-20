@@ -10,7 +10,7 @@ import { CreateLoanRequest } from '../../models/create-loan.model';
 })
 export class LoanService {
 
-  private baseUrl = 'http://localhost:8081/api/loans';
+ private baseUrl = 'http://loan-backend:8081/api/loans';
 
   constructor(private http: HttpClient) {}
 
