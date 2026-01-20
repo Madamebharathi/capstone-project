@@ -11,9 +11,8 @@ import { LoginResponseModel } from '../../models/login-response.model';
 })
 export class AuthService {
 
-  private BASE_URL = 'http://loan-backend:8081/api';
-private baseUrl = 'http://loan-backend:8081/api/admin/users';
-
+  private BASE_URL = 'http://localhost:8081/api';
+  private baseUrl = 'http://localhost:8081/api/admin/users';
 
   constructor(private http: HttpClient) {}
 
@@ -32,14 +31,15 @@ private baseUrl = 'http://loan-backend:8081/api/admin/users';
 
   // ✅ FIX: Add authorization header
   getMe() {
-    return this.http.get<User>(`${this.BASE_URL}/users/me`, {
+    return this.http.get<User>('http://localhost:8081/api/users/me', {
       headers: this.getAuthHeaders()
     });
   }
 
   // ✅ FIX: Add authorization header
   getAllUsers() {
-   return this.http.get<any[]>(`${this.BASE_URL}/admin/users`, 
+    return this.http.get<any[]>(
+      'http://localhost:8081/api/admin/users',
       {
         headers: this.getAuthHeaders()
       }
@@ -60,7 +60,9 @@ private baseUrl = 'http://loan-backend:8081/api/admin/users';
 
   // ✅ FIX: Add authorization header
   createUser(data: any) {
-   return this.http.post(`${this.BASE_URL}/admin/users`, data,
+    return this.http.post(
+      'http://localhost:8081/api/admin/users',
+      data,
       {
         headers: this.getAuthHeaders()
       }
