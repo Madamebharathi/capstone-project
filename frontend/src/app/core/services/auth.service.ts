@@ -11,12 +11,13 @@ import { LoginResponseModel } from '../../models/login-response.model';
 })
 export class AuthService {
 
-  private BASE_URL = 'http://localhost:8081/api';
-  private baseUrl = 'http://localhost:8081/api/admin/users';
+  // ✅ CHANGED: Use relative URLs
+  private BASE_URL = '/api';
+  private baseUrl = '/api/admin/users';
 
   constructor(private http: HttpClient) {}
 
-  // ✅ Add this helper method
+  // ✅ Helper method for auth headers
   private getAuthHeaders() {
     const token = localStorage.getItem('token') || '';
     return { Authorization: `Bearer ${token}` };
@@ -29,24 +30,20 @@ export class AuthService {
     );
   }
 
-  // ✅ FIX: Add authorization header
+  // ✅ CHANGED: Use relative URL
   getMe() {
-    return this.http.get<User>('http://localhost:8081/api/users/me', {
+    return this.http.get<User>('/api/users/me', {
       headers: this.getAuthHeaders()
     });
   }
 
-  // ✅ FIX: Add authorization header
+  // ✅ CHANGED: Use relative URL
   getAllUsers() {
-    return this.http.get<any[]>(
-      'http://localhost:8081/api/admin/users',
-      {
-        headers: this.getAuthHeaders()
-      }
-    );
+    return this.http.get<any[]>('/api/admin/users', {
+      headers: this.getAuthHeaders()
+    });
   }
 
-  // ✅ FIX: Add authorization header
   updateUserStatus(userId: string, active: boolean) {
     return this.http.put(
       `${this.baseUrl}/${userId}/status`,
@@ -57,11 +54,9 @@ export class AuthService {
     );
   }
 
-
-  // ✅ FIX: Add authorization header
   createUser(data: any) {
     return this.http.post(
-      'http://localhost:8081/api/admin/users',
+      '/api/admin/users',
       data,
       {
         headers: this.getAuthHeaders()

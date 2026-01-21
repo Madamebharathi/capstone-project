@@ -10,65 +10,56 @@ import { CreateLoanRequest } from '../../models/create-loan.model';
 })
 export class LoanService {
 
-  private baseUrl = 'http://localhost:8081/api/loans';
+  // ✅ CHANGED: Use relative URL - works with Nginx proxy
+  private baseUrl = '/api/loans';
 
   constructor(private http: HttpClient) {}
 
   getLoanById(id: string) {
-  const token = localStorage.getItem('token') || '';
-  return this.http.get<Loan>(`${this.baseUrl}/${id}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
-
-  // GET paginated loans
- // GET paginated loans
-// GET loans (paginated OR filtered by status)
-getLoans(
-  page = 0,
-  size = 10,
-  status?: LoanStatus
-): Observable<PageResponse<Loan>> {
-
-  let url = '';
-  let params = new HttpParams()
-    .set('page', page.toString())
-    .set('size', size.toString());
-
-  if (status) {
-    // ✅ CALL FILTER API
-    url = `${this.baseUrl}/status/${status}`;
-  } else {
-    // ✅ CALL NORMAL PAGINATION
-    url = `${this.baseUrl}/paginated`;
+    const token = localStorage.getItem('token') || '';
+    return this.http.get<Loan>(`${this.baseUrl}/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 
-  console.log('🌐 API CALL:', url, 'params:', params.toString());
+  getLoans(
+    page = 0,
+    size = 10,
+    status?: LoanStatus
+  ): Observable<PageResponse<Loan>> {
 
-  return this.http.get<PageResponse<Loan>>(url, { params });
-}
+    let url = '';
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
 
-  // CREATE loan
+    if (status) {
+      url = `${this.baseUrl}/status/${status}`;
+    } else {
+      url = `${this.baseUrl}/paginated`;
+    }
+
+    console.log('🌐 API CALL:', url, 'params:', params.toString());
+
+    return this.http.get<PageResponse<Loan>>(url, { params });
+  }
+
   createLoan(payload: CreateLoanRequest): Observable<Loan> {
     return this.http.post<Loan>(this.baseUrl, payload);
   }
 
-  // SUBMIT loan (USER)
   submitLoan(id: string): Observable<Loan> {
     return this.http.patch<Loan>(`${this.baseUrl}/${id}/submit`, {});
   }
 
-  // MARK UNDER REVIEW (ADMIN)
   markUnderReview(id: string): Observable<Loan> {
     return this.http.patch<Loan>(`${this.baseUrl}/${id}/under-review`, {});
   }
 
-  // APPROVE loan (ADMIN)
   approveLoan(id: string): Observable<Loan> {
     return this.http.patch<Loan>(`${this.baseUrl}/${id}/approve`, {});
   }
 
-  // REJECT loan (ADMIN)
   rejectLoan(id: string, rejectionReason: string): Observable<Loan> {
     return this.http.patch<Loan>(
       `${this.baseUrl}/${id}/reject`,
@@ -76,16 +67,14 @@ getLoans(
     );
   }
 
-  // UPDATE loan (USER edits DRAFT only)
   updateLoan(id: string, payload: Partial<Loan>): Observable<Loan> {
     return this.http.put<Loan>(`${this.baseUrl}/${id}`, payload);
   }
 
-  // DELETE loan (ADMIN)
   deleteLoan(id: string): Observable<Loan> {
-  const token = localStorage.getItem('token') || '';
-  return this.http.delete<Loan>(`${this.baseUrl}/${id}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-}
+    const token = localStorage.getItem('token') || '';
+    return this.http.delete<Loan>(`${this.baseUrl}/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
 }
