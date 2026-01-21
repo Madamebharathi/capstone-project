@@ -1,9 +1,39 @@
 version: "3.8"
 
 services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - loanpricing-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - loanpricing-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
   mongodb:
     image: mongo:6.0
-    container_name: loan-mongodb
     ports:
       - "27017:27017"
     volumes:
@@ -12,22 +42,22 @@ services:
       - loanpricing-network
 
   loan-backend:
-    build:
-      context: ./backend
-    container_name: loan-backend
+    build: ./backend
     ports:
       - "8081:8081"
     depends_on:
-      - mongodb
+      kafka:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://loan-mongodb:27017/loan_pricing_db
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/loan_pricing_db
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     networks:
       - loanpricing-network
 
   loan-frontend:
-    build:
-      context: ./frontend
-    container_name: loan-frontend
+    build: ./frontend
     ports:
       - "8080:80"
     depends_on:
