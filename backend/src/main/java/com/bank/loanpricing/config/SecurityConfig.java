@@ -47,8 +47,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:4200",  // Development (ng serve)
-                "http://localhost:8080"   // Docker (nginx)
+                "http://localhost:4200",  // Dev
+                "http://localhost:8082"   // Docker frontend container port mapped to host
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
