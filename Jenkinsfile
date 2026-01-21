@@ -12,7 +12,11 @@ pipeline {
 
         stage('Stop Old Containers') {
             steps {
-                sh 'docker-compose down || true'
+                // Stop old containers, remove volumes and orphans
+                sh '''
+                docker-compose down -v --remove-orphans || true
+                docker system prune -f
+                '''
             }
         }
 
@@ -24,7 +28,8 @@ pipeline {
 
         stage('Verify') {
             steps {
-                sh 'docker ps'
+                echo "Listing all loan project containers:"
+                sh 'docker ps --filter "name=loan-"'
             }
         }
     }

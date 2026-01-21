@@ -59,7 +59,7 @@ services:
   loan-frontend:
     build: ./frontend
     ports:
-      - "8080:80"
+      - "8082:80"
     depends_on:
       - loan-backend
     networks:
