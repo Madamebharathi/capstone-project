@@ -10,18 +10,24 @@ import { CreateLoanRequest } from '../../models/create-loan.model';
 })
 export class LoanService {
 
-  // ✅ CHANGED: Use relative URL - works with Nginx proxy
+  // FIXED BASE URL
   private baseUrl = '/api/loans';
 
   constructor(private http: HttpClient) {}
 
-  getLoanById(id: string) {
+  private getAuthHeaders() {
     const token = localStorage.getItem('token') || '';
+    return { Authorization: `Bearer ${token}` };
+  }
+
+  // GET loan by ID
+  getLoanById(id: string) {
     return this.http.get<Loan>(`${this.baseUrl}/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: this.getAuthHeaders()
     });
   }
 
+  // GET loans (paginated OR filtered by status)
   getLoans(
     page = 0,
     size = 10,
@@ -41,40 +47,71 @@ export class LoanService {
 
     console.log('🌐 API CALL:', url, 'params:', params.toString());
 
-    return this.http.get<PageResponse<Loan>>(url, { params });
+    return this.http.get<PageResponse<Loan>>(url, {
+      params,
+      headers: this.getAuthHeaders()
+    });
   }
 
+  // CREATE loan
   createLoan(payload: CreateLoanRequest): Observable<Loan> {
-    return this.http.post<Loan>(this.baseUrl, payload);
-  }
-
-  submitLoan(id: string): Observable<Loan> {
-    return this.http.patch<Loan>(`${this.baseUrl}/${id}/submit`, {});
-  }
-
-  markUnderReview(id: string): Observable<Loan> {
-    return this.http.patch<Loan>(`${this.baseUrl}/${id}/under-review`, {});
-  }
-
-  approveLoan(id: string): Observable<Loan> {
-    return this.http.patch<Loan>(`${this.baseUrl}/${id}/approve`, {});
-  }
-
-  rejectLoan(id: string, rejectionReason: string): Observable<Loan> {
-    return this.http.patch<Loan>(
-      `${this.baseUrl}/${id}/reject`,
-      { rejectionReason }
+    return this.http.post<Loan>(
+      this.baseUrl,
+      payload,
+      { headers: this.getAuthHeaders() }
     );
   }
 
-  updateLoan(id: string, payload: Partial<Loan>): Observable<Loan> {
-    return this.http.put<Loan>(`${this.baseUrl}/${id}`, payload);
+  // SUBMIT loan (USER)
+  submitLoan(id: string): Observable<Loan> {
+    return this.http.patch<Loan>(
+      `${this.baseUrl}/${id}/submit`,
+      {},
+      { headers: this.getAuthHeaders() }
+    );
   }
 
+  // MARK UNDER REVIEW (ADMIN)
+  markUnderReview(id: string): Observable<Loan> {
+    return this.http.patch<Loan>(
+      `${this.baseUrl}/${id}/under-review`,
+      {},
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // APPROVE loan (ADMIN)
+  approveLoan(id: string): Observable<Loan> {
+    return this.http.patch<Loan>(
+      `${this.baseUrl}/${id}/approve`,
+      {},
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // REJECT loan (ADMIN)
+  rejectLoan(id: string, rejectionReason: string): Observable<Loan> {
+    return this.http.patch<Loan>(
+      `${this.baseUrl}/${id}/reject`,
+      { rejectionReason },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // UPDATE loan (USER edits DRAFT only)
+  updateLoan(id: string, payload: Partial<Loan>): Observable<Loan> {
+    return this.http.put<Loan>(
+      `${this.baseUrl}/${id}`,
+      payload,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // DELETE loan (ADMIN)
   deleteLoan(id: string): Observable<Loan> {
-    const token = localStorage.getItem('token') || '';
-    return this.http.delete<Loan>(`${this.baseUrl}/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.delete<Loan>(
+      `${this.baseUrl}/${id}`,
+      { headers: this.getAuthHeaders() }
+    );
   }
 }

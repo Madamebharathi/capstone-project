@@ -6,23 +6,25 @@ import { User } from '../../models/user.model';
 import { LoginRequestModel } from '../../models/login-request.model';
 import { LoginResponseModel } from '../../models/login-response.model';
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  // ✅ CHANGED: Use relative URLs
+  // ✅ ONE base URL ONLY
   private BASE_URL = '/api';
   private baseUrl = '/api/admin/users';
 
   constructor(private http: HttpClient) {}
 
-  // ✅ Helper method for auth headers
+  // Auth header helper
   private getAuthHeaders() {
     const token = localStorage.getItem('token') || '';
     return { Authorization: `Bearer ${token}` };
   }
 
+  // LOGIN
   login(data: LoginRequestModel): Observable<LoginResponseModel> {
     return this.http.post<LoginResponseModel>(
       `${this.BASE_URL}/auth/login`,
@@ -30,40 +32,40 @@ export class AuthService {
     );
   }
 
-  // ✅ CHANGED: Use relative URL
+  // GET CURRENT USER
   getMe() {
-    return this.http.get<User>('/api/users/me', {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<User>(
+      `${this.BASE_URL}/users/me`,
+      { headers: this.getAuthHeaders() }
+    );
   }
 
-  // ✅ CHANGED: Use relative URL
+  // GET ALL USERS (ADMIN)
   getAllUsers() {
-    return this.http.get<any[]>('/api/admin/users', {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(
+      `${this.BASE_URL}/admin/users`,
+      { headers: this.getAuthHeaders() }
+    );
   }
 
+  // UPDATE USER STATUS
   updateUserStatus(userId: string, active: boolean) {
     return this.http.put(
-      `${this.baseUrl}/${userId}/status`,
+      `${this.BASE_URL}/admin/users/${userId}/status`,
       { active },
-      {
-        headers: this.getAuthHeaders()
-      }
+      { headers: this.getAuthHeaders() }
     );
   }
 
+  // CREATE USER
   createUser(data: any) {
     return this.http.post(
-      '/api/admin/users',
+      `${this.BASE_URL}/admin/users`,
       data,
-      {
-        headers: this.getAuthHeaders()
-      }
+      { headers: this.getAuthHeaders() }
     );
   }
-  
+
   logout() {
     localStorage.clear();
   }
